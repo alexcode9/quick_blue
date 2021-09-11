@@ -6,29 +6,35 @@ import 'package:quick_blue_platform_interface/quick_blue_platform_interface.dart
 
 class MethodChannelQuickBlue extends QuickBluePlatform {
   static const MethodChannel _method = const MethodChannel('quick_blue/method');
-  static const _event_scanResult = const EventChannel('quick_blue/event.scanResult');
-  static const _message_connector = const BasicMessageChannel('quick_blue/message.connector', StandardMessageCodec());
+  static const _event_scanResult =
+      const EventChannel('quick_blue/event.scanResult');
+  static const _message_connector = const BasicMessageChannel(
+      'quick_blue/message.connector', StandardMessageCodec());
 
   MethodChannelQuickBlue() {
     _message_connector.setMessageHandler(_handleConnectorMessage);
   }
 
   @override
-  Future<bool> isBluetoothAvailable() => _method.invokeMethod('isBluetoothAvailable');
+  Future<bool?> isBluetoothAvailable() =>
+      _method.invokeMethod<bool>('isBluetoothAvailable');
 
   @override
   void startScan() {
-    _method.invokeMethod('startScan')
+    _method
+        .invokeMethod('startScan')
         .then((_) => print('startScan invokeMethod success'));
   }
 
   @override
   void stopScan() {
-    _method.invokeMethod('stopScan')
+    _method
+        .invokeMethod('stopScan')
         .then((_) => print('stopScan invokeMethod success'));
   }
 
-  Stream<dynamic> _scanResultStream = _event_scanResult.receiveBroadcastStream({'name': 'scanResult'});
+  Stream<dynamic> _scanResultStream =
+      _event_scanResult.receiveBroadcastStream({'name': 'scanResult'});
 
   @override
   Stream<dynamic> get scanResultStream => _scanResultStream;
@@ -54,11 +60,12 @@ class MethodChannelQuickBlue extends QuickBluePlatform {
     }).then((_) => print('discoverServices invokeMethod success'));
   }
 
-  Future<void> _handleConnectorMessage(dynamic message) {
+  Future<void> _handleConnectorMessage(dynamic message) async {
     print('_handleConnectorMessage $message');
     if (message['ConnectionState'] != null) {
       String deviceId = message['deviceId'];
-      BlueConnectionState connectionState = BlueConnectionState.parse(message['ConnectionState']);
+      BlueConnectionState connectionState =
+          BlueConnectionState.parse(message['ConnectionState']);
       onConnectionChanged?.call(deviceId, connectionState);
     } else if (message['ServiceState'] != null) {
       if (message['ServiceState'] == 'discovered') {
@@ -72,7 +79,8 @@ class MethodChannelQuickBlue extends QuickBluePlatform {
       String deviceId = message['deviceId'];
       var characteristicValue = message['characteristicValue'];
       String characteristic = characteristicValue['characteristic'];
-      Uint8List value = Uint8List.fromList(characteristicValue['value']); // In case of _Uint8ArrayView
+      Uint8List value = Uint8List.fromList(
+          characteristicValue['value']); // In case of _Uint8ArrayView
       onValueChanged?.call(deviceId, characteristic, value);
     } else if (message['mtuConfig'] != null) {
       _mtuConfigController.add(message['mtuConfig']);
@@ -80,8 +88,9 @@ class MethodChannelQuickBlue extends QuickBluePlatform {
   }
 
   @override
-  Future<void> setNotifiable(String deviceId, String service, String characteristic, BleInputProperty bleInputProperty) {
-    _method.invokeMethod('setNotifiable', {
+  Future<void> setNotifiable(String deviceId, String service,
+      String characteristic, BleInputProperty bleInputProperty) {
+    return _method.invokeMethod('setNotifiable', {
       'deviceId': deviceId,
       'service': service,
       'characteristic': characteristic,
@@ -90,8 +99,13 @@ class MethodChannelQuickBlue extends QuickBluePlatform {
   }
 
   @override
-  Future<void> writeValue(String deviceId, String service, String characteristic, Uint8List value, BleOutputProperty bleOutputProperty) {
-    _method.invokeMethod('writeValue', {
+  Future<void> writeValue(
+      String deviceId,
+      String service,
+      String characteristic,
+      Uint8List value,
+      BleOutputProperty bleOutputProperty) {
+    return _method.invokeMethod('writeValue', {
       'deviceId': deviceId,
       'service': service,
       'characteristic': characteristic,

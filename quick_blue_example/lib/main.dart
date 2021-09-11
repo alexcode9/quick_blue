@@ -15,7 +15,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  StreamSubscription<BlueScanResult> _subscription;
+  StreamSubscription<BlueScanResult>? _subscription;
 
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  var _scanResults = List<BlueScanResult>();
+  var _scanResults = <BlueScanResult>[];
 
   Widget _buildListView() {
     return Expanded(
@@ -90,9 +90,12 @@ class _MyAppState extends State<MyApp> {
               Text('${_scanResults[index].name}(${_scanResults[index].rssi})'),
           subtitle: Text(_scanResults[index].deviceId),
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(
-              builder: (context) => PeripheralDetailPage(_scanResults[index].deviceId),
-            ));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      PeripheralDetailPage(_scanResults[index].deviceId),
+                ));
           },
         ),
         separatorBuilder: (context, index) => Divider(),

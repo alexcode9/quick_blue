@@ -10,11 +10,13 @@ import 'models.dart';
 
 export 'models.dart';
 
-typedef OnConnectionChanged = void Function(String deviceId, BlueConnectionState state);
+typedef OnConnectionChanged = void Function(
+    String deviceId, BlueConnectionState state);
 
 typedef OnServiceDiscovered = void Function(String deviceId, String serviceId);
 
-typedef OnValueChanged = void Function(String deviceId, String characteristicId, Uint8List value);
+typedef OnValueChanged = void Function(
+    String deviceId, String characteristicId, Uint8List value);
 
 abstract class QuickBluePlatform extends PlatformInterface {
   QuickBluePlatform() : super(token: _token);
@@ -30,7 +32,7 @@ abstract class QuickBluePlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<bool> isBluetoothAvailable();
+  Future<bool?> isBluetoothAvailable();
 
   void startScan();
 
@@ -42,17 +44,23 @@ abstract class QuickBluePlatform extends PlatformInterface {
 
   void disconnect(String deviceId);
 
-  OnConnectionChanged onConnectionChanged;
+  OnConnectionChanged? onConnectionChanged;
 
   void discoverServices(String deviceId);
 
-  OnServiceDiscovered onServiceDiscovered;
+  OnServiceDiscovered? onServiceDiscovered;
 
-  Future<void> setNotifiable(String deviceId, String service, String characteristic, BleInputProperty bleInputProperty);
+  Future<void> setNotifiable(String deviceId, String service,
+      String characteristic, BleInputProperty bleInputProperty);
 
-  OnValueChanged onValueChanged;
+  OnValueChanged? onValueChanged;
 
-  Future<void> writeValue(String deviceId, String service, String characteristic, Uint8List value, BleOutputProperty bleOutputProperty);
+  Future<void> writeValue(
+      String deviceId,
+      String service,
+      String characteristic,
+      Uint8List value,
+      BleOutputProperty bleOutputProperty);
 
   Future<int> requestMtu(String deviceId, int expectedMtu);
 }
